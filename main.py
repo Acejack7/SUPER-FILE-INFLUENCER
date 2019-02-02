@@ -15,7 +15,8 @@ if __name__ == '__main__':
     if os.path.isdir(filepath_or_file_trans):
         for single_file in os.listdir(filepath_or_file_trans):
             if single_file.endswith('.xlsx'):
-                contents = excel_contents(os.path.abspath(single_file), source_column, target_column, 'trans')
+                filepath = os.path.join(filepath_or_file_trans, single_file)
+                contents = excel_contents(filepath, source_column, target_column, 'trans')
                 all_translated_content = {**all_translated_content, **contents}
     elif os.path.isfile(filepath_or_file_trans):
         if filepath_or_file_trans.endswith('.xlsx'):
@@ -25,7 +26,8 @@ if __name__ == '__main__':
     if os.path.isdir(filepath_or_file_review):
         for single_file in os.listdir(filepath_or_file_review):
             if single_file.endswith('.xlsx'):
-                contents = excel_contents(os.path.abspath(single_file), source_column, target_column, 'review')
+                filepath = os.path.join(filepath_or_file_review, single_file)
+                contents = excel_contents(filepath, source_column, target_column, 'review')
                 all_translated_content = {**all_translated_content, **contents}
     elif os.path.isfile(filepath_or_file_review):
         if filepath_or_file_review.endswith('.xlsx'):
