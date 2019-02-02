@@ -5,9 +5,8 @@ from openpyxl import load_workbook
 
 
 def excel_contents(filepath, source_col, target_col, trans_or_rev):
-    # filepath.replace('\\\\', '\\')
+    print(filepath)
     wb = load_workbook(filepath)
-    print(filepath + ' loaded correctly.')
 
     # get file name
     file_name = os.path.split(filepath)[1]
@@ -41,3 +40,5 @@ def excel_contents(filepath, source_col, target_col, trans_or_rev):
     wb.close()
 
     return(translation_contents)
+
+# TO DO: OGARNIJ PODZIAL TRANS I REVIEW
