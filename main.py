@@ -1,43 +1,35 @@
-#!python3
+#! python3
 
 import os
-import tkinter as tk
-from tkinter import ttk
+from excel_compare_translations import excel_contents
 
-# GUI
-window = tk.Tk()
-window.title("SUPER FILE INFLUENCER")
+# temporary user input, later GUI or anything else
+filepath_or_file_trans = input("Please provide the file path to translated excel file or directory with excel files: ")
+filepath_or_file_review = input("Please provide the file path to reviewed excel file or directory with excel files: ")
+source_column = input("Please provide the letter of source column (only ONE letter): ").capitalize()
+target_column = input("Please provide the letter of target column (only ONE letter): ").capitalize()
 
+all_translated_content = {}
 
-# FUNCTION - add new sentence to the file
-def change_file():
-    filepath = user_filepath.get()
+if __name__ == '__main__':
+    if os.path.isdir(filepath_or_file_trans):
+        for single_file in os.listdir(filepath_or_file_trans):
+            if single_file.endswith('.xlsx'):
+                contents = excel_contents(os.path.abspath(single_file), source_column, target_column, 'trans')
+                all_translated_content = {**all_translated_content, **contents}
+    elif os.path.isfile(filepath_or_file_trans):
+        if filepath_or_file_trans.endswith('.xlsx'):
+            contents = excel_contents(os.path.abspath(filepath_or_file_trans), source_column, target_column, 'trans')
+            all_translated_content = {**all_translated_content, **contents}
 
-    if os.path.isfile(filepath) is False:
-        filepath_info.set("This is not the file. Please correct the filepath.")
-        return
+    if os.path.isdir(filepath_or_file_review):
+        for single_file in os.listdir(filepath_or_file_review):
+            if single_file.endswith('.xlsx'):
+                contents = excel_contents(os.path.abspath(single_file), source_column, target_column, 'review')
+                all_translated_content = {**all_translated_content, **contents}
+    elif os.path.isfile(filepath_or_file_review):
+        if filepath_or_file_review.endswith('.xlsx'):
+            contents = excel_contents(os.path.abspath(filepath_or_file_review), source_column, target_column, 'review')
+            all_translated_content = {**all_translated_content, **contents}
 
-    with open(filepath, 'a', encoding='utf-8') as edit_file:
-        edit_file.write('\n\n*** The new sentence. ***')
-        edit_file.close()
-        filepath_info.set("New sentence added! Click again to add another.")
-        return
-
-
-# Label for filepath
-filepath_info = tk.StringVar()
-filepath_info.set("Provide filepath:")
-ttk.Label(window, textvariable=filepath_info).grid(column=0, row=0)
-
-# Textbox for crop name
-user_filepath = tk.StringVar()
-user_filepath_entered = ttk.Entry(window, width=40, textvariable=user_filepath)
-user_filepath_entered.grid(column=0, row=1)
-
-# Action Button
-action = ttk.Button(window, text="Add new sentence",
-                    command=change_file)
-action.grid(column=1, row=5)
-
-if __name__ == "__main__":
-    window.mainloop()
+    print(all_translated_content)
