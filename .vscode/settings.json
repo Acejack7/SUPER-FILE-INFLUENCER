@@ -1,5 +1,5 @@
 {
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
-    "python.pythonPath": "C:\\Python36-32\\python.exe"
+    "python.pythonPath": "C:\\Programowanie\\SFI\\Scripts\\python.exe"
 }
