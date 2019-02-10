@@ -5,7 +5,7 @@
 
 import os
 from openpyxl import load_workbook, Workbook
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font, PatternFill
 
 
 def excel_contents(filepath, source_col, target_col, trans_or_rev):
@@ -93,6 +93,8 @@ def generate_excel_report(filepath, translation_contents):
     ws.column_dimensions['F'].width = 39.15
     ws['G1'] = 'Reviewed File'
     ws.column_dimensions['G'].width = 31.32
+    ws['H1'] = 'Updated?'
+    ws.column_dimensions['H'].width = 10.44
 
     # get contents from translated (not reviewed) files and save them in newly created excel report
     sheet_row_num = 2
@@ -135,6 +137,20 @@ def generate_excel_report(filepath, translation_contents):
                                     ws['F' + src_row].alignment = Alignment(wrap_text=True)
                                     ws['G' + src_row] = file_key
                 sheet_row_num += 1
+
+    # compare translation and review, mark differences
+    translation_column = columns[4]
+
+    for cell in translation_column[1:]:
+        current_row = str(cell.row)
+        translation = cell.value
+        review = ws['F' + current_row].value
+        if translation != review:
+            ws['H' + current_row] = 'Yes'
+            ws['H' + current_row].fill = PatternFill(fgColor='FF0000', fill_type='solid')
+            ws['F' + current_row].font = Font(color='FF0000')
+        else:
+            ws['H' + current_row] = 'No'
 
     # save the file
     wb_report.save(os.path.join(dir_destination, 'test.xlsx'))
