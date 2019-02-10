@@ -4,7 +4,7 @@
 # dict structure: translation_contents[<file_name>][<tab_name>][<row_num>]{source, translation, reviewed_translation}
 
 import os
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 
 
 def excel_contents(filepath, source_col, target_col, trans_or_rev):
@@ -54,3 +54,76 @@ def excel_contents(filepath, source_col, target_col, trans_or_rev):
     wb.close()
 
     return(translation_contents)
+
+
+def generate_excel_report(filepath, translation_contents):
+    # check if filepath is dir or file
+    if os.path.isfile(filepath):
+        dirname = os.path.dirname(filepath)
+    else:
+        dirname = filepath
+
+    # removing last folder (expected: translation or review folder)
+    dirname_split = dirname.split('\\')[:-1]
+    # folder that we will save the report
+    dir_destination = ''
+    for elem in dirname_split:
+        dir_destination += elem
+        if dirname_split[-1] != elem:
+            dir_destination += '\\'
+
+    # create report file
+    wb_report = Workbook()
+    ws = wb_report.active
+    ws.title = 'Report'
+
+    # set names of columns
+    ws['A1'] = 'Translated File'
+    ws['B1'] = 'Sheet Name'
+    ws['C1'] = 'Row Number'
+    ws['D1'] = 'Source'
+    ws['E1'] = 'Translation'
+    ws['F1'] = 'Reviewed Translation'
+    ws['G1'] = 'Reviewed File'
+
+    # get contents from translated (not reviewed) files and save them in newly created excel report
+    sheet_row_num = 2
+    for file_key in translation_contents:
+        for sheet_key in translation_contents[file_key]:
+            for row_key in translation_contents[file_key][sheet_key]:
+                for cell_key in translation_contents[file_key][sheet_key][row_key]:
+                    if 'translation_review' not in translation_contents[file_key][sheet_key][row_key]:
+                        current_row = str(sheet_row_num)
+                        cell_value = translation_contents[file_key][sheet_key][row_key][cell_key]
+                        if cell_key == 'source':
+                            ws['A' + current_row] = file_key
+                            ws['B' + current_row] = sheet_key
+                            ws['C' + current_row] = row_key
+                            ws['D' + current_row] = cell_value
+                        else:
+                            ws['E' + current_row] = cell_value
+                sheet_row_num += 1
+
+    # get contents from reviewed files and compare it vs report contents and provide translation
+    columns = list(ws.columns)
+    source_column = columns[3]
+
+    sheet_row_num = 2
+    for file_key in translation_contents:
+        for sheet_key in translation_contents[file_key]:
+            for row_key in translation_contents[file_key][sheet_key]:
+                for cell_key in translation_contents[file_key][sheet_key][row_key]:
+                    if 'translation_review' in translation_contents[file_key][sheet_key][row_key]:
+                        current_row = str(sheet_row_num)
+                        cell_value = translation_contents[file_key][sheet_key][row_key][cell_key]
+                        if cell_key == 'source':
+                            for src in source_column:
+                                if cell_value == src.value:
+                                    src_row = str(src.row)
+                                    review = translation_contents[file_key][sheet_key][row_key]['translation_review']
+                                    ws['F' + src_row] = review
+                                    ws['G' + src_row] = file_key
+                sheet_row_num += 1
+
+    # save the file
+    wb_report.save(os.path.join(dir_destination, 'test.xlsx'))

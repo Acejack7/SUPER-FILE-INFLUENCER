@@ -1,7 +1,7 @@
 #! python3
 
 import os
-from excel_compare_translations import excel_contents
+from excel_compare_translations import excel_contents, generate_excel_report
 
 # temporary user input, later GUI or anything else
 filepath_or_file_trans = input("Please provide the file path to translated excel file or directory with excel files: ")
@@ -37,5 +37,4 @@ if __name__ == '__main__':
 
     print(all_translated_content)
 
-# TO DO:
-# GET CONTENT INTO XLSX REPORT FILE
+    generate_excel_report(filepath_or_file_trans, all_translated_content)
