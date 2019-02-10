@@ -5,6 +5,7 @@
 
 import os
 from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Alignment
 
 
 def excel_contents(filepath, source_col, target_col, trans_or_rev):
@@ -79,12 +80,19 @@ def generate_excel_report(filepath, translation_contents):
 
     # set names of columns
     ws['A1'] = 'Translated File'
+    ws.column_dimensions['A'].width = 31.32
     ws['B1'] = 'Sheet Name'
-    ws['C1'] = 'Row Number'
+    ws.column_dimensions['B'].width = 20.88
+    ws['C1'] = 'Row'
+    ws.column_dimensions['C'].width = 7.83
     ws['D1'] = 'Source'
+    ws.column_dimensions['D'].width = 39.15
     ws['E1'] = 'Translation'
+    ws.column_dimensions['E'].width = 39.15
     ws['F1'] = 'Reviewed Translation'
+    ws.column_dimensions['F'].width = 39.15
     ws['G1'] = 'Reviewed File'
+    ws.column_dimensions['G'].width = 31.32
 
     # get contents from translated (not reviewed) files and save them in newly created excel report
     sheet_row_num = 2
@@ -100,8 +108,10 @@ def generate_excel_report(filepath, translation_contents):
                             ws['B' + current_row] = sheet_key
                             ws['C' + current_row] = row_key
                             ws['D' + current_row] = cell_value
+                            ws['D' + current_row].alignment = Alignment(wrap_text=True)
                         else:
                             ws['E' + current_row] = cell_value
+                            ws['E' + current_row].alignment = Alignment(wrap_text=True)
                 sheet_row_num += 1
 
     # get contents from reviewed files and compare it vs report contents and provide translation
@@ -122,6 +132,7 @@ def generate_excel_report(filepath, translation_contents):
                                     src_row = str(src.row)
                                     review = translation_contents[file_key][sheet_key][row_key]['translation_review']
                                     ws['F' + src_row] = review
+                                    ws['F' + src_row].alignment = Alignment(wrap_text=True)
                                     ws['G' + src_row] = file_key
                 sheet_row_num += 1
 

@@ -35,6 +35,4 @@ if __name__ == '__main__':
                                       'translation_review')
             all_translated_content = {**all_translated_content, **contents}
 
-    print(all_translated_content)
-
     generate_excel_report(filepath_or_file_trans, all_translated_content)
